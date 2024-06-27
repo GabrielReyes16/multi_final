@@ -29,51 +29,61 @@ class _GuerrerosScreenState extends State<GuerrerosScreen> {
     }
   }
 
-void _agregarGuerrero() {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => EditarGuerreroScreen(guerrero: Guerrero(id: '', nombre: '', nivelPoder: 0, estado: false, fechaRegistro: DateTime.now())),
-    ),
-  ).then((value) {
-    _cargarGuerreros();
-  });
-}
-
+  void _agregarGuerrero() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditarGuerreroScreen(guerrero: Guerrero(id: '', nombre: '', nivelPoder: 0, estado: false, fechaRegistro: DateTime.now())),
+      ),
+    ).then((value) {
+      if (value != null && value) {
+        _cargarGuerreros();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Lista de Guerreros'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              _agregarGuerrero();
-            },
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: guerreros.length,
+              itemBuilder: (context, index) {
+                Guerrero guerrero = guerreros[index];
+                return ListTile(
+                  title: Text(guerrero.nombre),
+                  subtitle: Text('Nivel de Poder: ${guerrero.nivelPoder.toString()}'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditarGuerreroScreen(guerrero: guerrero),
+                      ),
+                    ).then((value) {
+                      if (value != null && value) {
+                        _cargarGuerreros();
+                      }
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                _agregarGuerrero();
+              },
+              child: Text('Agregar Guerrero'),
+            ),
           ),
         ],
-      ),
-      body: ListView.builder(
-        itemCount: guerreros.length,
-        itemBuilder: (context, index) {
-          Guerrero guerrero = guerreros[index];
-          return ListTile(
-            title: Text(guerrero.nombre),
-            subtitle: Text('Nivel de Poder: ${guerrero.nivelPoder.toString()}'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditarGuerreroScreen(guerrero: guerrero),
-                ),
-              ).then((value) {
-                _cargarGuerreros();
-              });
-            },
-          );
-        },
       ),
     );
   }

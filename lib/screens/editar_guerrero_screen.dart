@@ -18,30 +18,47 @@ class _EditarGuerreroScreenState extends State<EditarGuerreroScreen> {
   bool estado = true; // Estado por defecto
   DateTime fechaRegistro = DateTime.now(); // Fecha por defecto
   GuerreroService guerreroService = GuerreroService();
+  bool _esNuevo = false; // Determina si es nuevo registro
 
   @override
   void initState() {
     super.initState();
-    nombreController.text = widget.guerrero.nombre;
-    nivelPoderController.text = widget.guerrero.nivelPoder.toString();
-    estado = widget.guerrero.estado;
-    fechaRegistro = widget.guerrero.fechaRegistro;
+    // Verifica si es nuevo o existente
+    _esNuevo = widget.guerrero.id.isEmpty;
+    // Configura los controladores y estado inicial
+    if (!_esNuevo) {
+      nombreController.text = widget.guerrero.nombre;
+      nivelPoderController.text = widget.guerrero.nivelPoder.toString();
+      estado = widget.guerrero.estado;
+      fechaRegistro = widget.guerrero.fechaRegistro;
+    }
   }
 
-  Future<void> _actualizarGuerrero() async {
+  Future<void> _guardarGuerrero() async {
     try {
-      await guerreroService.actualizarGuerrero(
-        widget.guerrero.id,
-        nombreController.text,
-        int.parse(nivelPoderController.text),
-        estado,
-        fechaRegistro,
-      );
+      if (_esNuevo) {
+        // Si es nuevo, crea un nuevo guerrero
+        await guerreroService.crearGuerrero(Guerrero(
+          nombre: nombreController.text,
+          nivelPoder: int.parse(nivelPoderController.text),
+          estado: estado,
+          fechaRegistro: fechaRegistro, id: '',
+        ));
+      } else {
+        // Si no es nuevo, actualiza el guerrero existente
+        await guerreroService.actualizarGuerrero(
+          widget.guerrero.id,
+          nombreController.text,
+          int.parse(nivelPoderController.text),
+          estado,
+          fechaRegistro,
+        );
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Guerrero actualizado')),
+        SnackBar(content: Text('Guerrero ${_esNuevo ? 'creado' : 'actualizado'}')),
       );
     } catch (e) {
-      print('Error al actualizar guerrero: $e');
+      print('Error al ${_esNuevo ? 'crear' : 'actualizar'} guerrero: $e');
     }
   }
 
@@ -49,12 +66,12 @@ class _EditarGuerreroScreenState extends State<EditarGuerreroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Guerrero'),
+        title: Text(_esNuevo ? 'Crear Guerrero' : 'Editar Guerrero'),
         actions: [
           IconButton(
             icon: Icon(Icons.save),
             onPressed: () {
-              _actualizarGuerrero();
+              _guardarGuerrero();
             },
           ),
         ],
@@ -82,7 +99,7 @@ class _EditarGuerreroScreenState extends State<EditarGuerreroScreen> {
                 });
               },
             ),
-            Text('Fecha de Registro: ${DateFormat('dd/MM/yyyy').format(fechaRegistro)}'), // Uso correcto de DateFormat
+            Text('Fecha de Registro: ${DateFormat('dd/MM/yyyy').format(fechaRegistro)}'),
           ],
         ),
       ),

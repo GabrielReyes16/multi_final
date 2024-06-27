@@ -2,9 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const guerrerosRouter = require('./routes/guerreros');
+const cors = require('cors');
+
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
+
 
 // Conexión a MongoDB
 mongoose.connect('mongodb://127.0.0.1/guerreros', {

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Guerrero = require('../models/guerrero');
 
+
+
 // Ruta para obtener todos los guerreros
 router.get('/', async (req, res) => {
     try {
@@ -28,5 +30,46 @@ router.post('/', async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 });
+
+// Ruta para actualizar un guerrero
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const guerrero = await Guerrero.findById(id);
+        if (!guerrero) {
+            return res.status(404).json({ message: 'Guerrero no encontrado' });
+        }
+
+        guerrero.nombre = req.body.nombre;
+        guerrero.nivelPoder = req.body.nivelPoder;
+        guerrero.estado = req.body.estado;
+        guerrero.fechaRegistro = req.body.fechaRegistro;
+
+        const updatedGuerrero = await guerrero.save();
+        res.json(updatedGuerrero);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+
+// Ruta para eliminar un guerrero
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const guerrero = await Guerrero.findById(id);
+        if (!guerrero) {
+            return res.status(404).json({ message: 'Guerrero no encontrado' });
+        }
+
+        await guerrero.remove();
+        res.json({ message: 'Guerrero eliminado correctamente' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 
 module.exports = router;
