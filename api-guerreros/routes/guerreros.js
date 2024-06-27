@@ -64,8 +64,9 @@ router.delete('/:id', async (req, res) => {
             return res.status(404).json({ message: 'Guerrero no encontrado' });
         }
 
-        await guerrero.remove();
-        res.json({ message: 'Guerrero eliminado correctamente' });
+        const deletedGuerrero = await guerrero.deleteOne(); // Utiliza deleteOne() para eliminar el guerrero
+
+        res.json({ message: 'Guerrero eliminado correctamente', deletedGuerrero });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

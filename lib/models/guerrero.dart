@@ -1,9 +1,9 @@
 class Guerrero {
-  String id;
-  String nombre;
-  int nivelPoder;
-  bool estado;
-  DateTime fechaRegistro;
+  final String id;
+  final String nombre;
+  final int nivelPoder;
+  final bool estado;
+  final DateTime fechaRegistro;
 
   Guerrero({
     required this.id,
@@ -15,7 +15,7 @@ class Guerrero {
 
   factory Guerrero.fromJson(Map<String, dynamic> json) {
     return Guerrero(
-      id: json['_id'],
+      id: json['_id'], // Asegúrate de que el nombre del campo coincide con tu API
       nombre: json['nombre'],
       nivelPoder: json['nivelPoder'],
       estado: json['estado'],

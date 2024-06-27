@@ -61,10 +61,15 @@ Future<List<Guerrero>> getGuerreros() async {
   }
 
   // Método para eliminar un guerrero
-  Future<void> eliminarGuerrero(int id) async {
-    final response = await http.delete(Uri.parse('$apiUrl/guerreros/$id'));
-    if (response.statusCode != 200) {
-      throw Exception('Error al eliminar guerrero');
+  Future<void> eliminarGuerrero(String id) async {
+    try {
+      final response = await http.delete(Uri.parse('$apiUrl/guerreros/$id'));
+      if (response.statusCode != 200) {
+        throw Exception('Error al eliminar guerrero');
+      }
+    } catch (e) {
+      print('Error en la solicitud HTTP: $e');
+      throw Exception('Error al eliminar guerrero: $e');
     }
   }
 }

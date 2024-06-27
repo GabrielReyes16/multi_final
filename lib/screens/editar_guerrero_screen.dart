@@ -62,12 +62,52 @@ class _EditarGuerreroScreenState extends State<EditarGuerreroScreen> {
     }
   }
 
+  Future<void> _eliminarGuerrero() async {
+    try {
+      await guerreroService.eliminarGuerrero(widget.guerrero.id);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Guerrero eliminado')),
+      );
+      Navigator.pop(context, true); // Regresa a la pantalla anterior con éxito
+    } catch (e) {
+      print('Error al eliminar guerrero: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(_esNuevo ? 'Crear Guerrero' : 'Editar Guerrero'),
         actions: [
+          if (!_esNuevo)
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Eliminar Guerrero'),
+                    content: Text('¿Estás seguro de eliminar este guerrero?'),
+                    actions: [
+                      TextButton(
+                        child: Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Eliminar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _eliminarGuerrero();
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           IconButton(
             icon: Icon(Icons.save),
             onPressed: () {
